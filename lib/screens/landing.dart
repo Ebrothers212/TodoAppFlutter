@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/user.dart';
 import 'todo_list_screen.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
 import '../util/firestoreCollections.dart';
 
@@ -16,8 +15,6 @@ class _LandingScreenState extends State<LandingScreen> {
   User _userLoggingIn = User.blankUser;
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   
   @override
   void initState() {
@@ -85,7 +82,7 @@ class _LandingScreenState extends State<LandingScreen> {
               ),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                     if (
                         (_usernameController.text != '') &&
                         (_passwordController.text != '')
@@ -97,11 +94,14 @@ class _LandingScreenState extends State<LandingScreen> {
                                 email: '',
                                 password: _passwordController.text,
                             );
-                            FirestoreCollections.saveUser(_userLoggingIn, context);
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const TodoListScreen()),
-                            );
+                            final navigatorContext = context;
+                            final userSaved = await FirestoreCollections.saveUser(_userLoggingIn, context);
+                            if (userSaved && navigatorContext.mounted) {
+                              Navigator.pushReplacement(
+                                  navigatorContext,
+                                  MaterialPageRoute(builder: (context) => const TodoListScreen()),
+                              );
+                            }
                             return;
                     }
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -112,6 +112,20 @@ class _LandingScreenState extends State<LandingScreen> {
                     return;
                 },
                 child: const Text('Sign Up'),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () async {
+                  final navigatorContext = context;
+                  final user = await FirestoreCollections.getUser(_usernameController.text, _passwordController.text, context);
+                  if (user != null && navigatorContext.mounted) {
+                    Navigator.pushReplacement(
+                        navigatorContext,
+                        MaterialPageRoute(builder: (context) => const TodoListScreen()),
+                    );
+                  }
+                },
+                child: const Text('Sign In'),
               ),
             ],
           ),
