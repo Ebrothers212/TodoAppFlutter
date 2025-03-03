@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "671969268943",
+    "project_id": "basicappsdatabase",
+    "storage_bucket": "basicappsdatabase.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:671969268943:android:1eaab5cd42eb5c809253ba",
+        "android_client_info": {
+          "package_name": "com.example.todo_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD33b0TYdkCvOtKsH6XmDh_Kn_S9pminuQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

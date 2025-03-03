@@ -353,190 +353,194 @@ class _TodoListScreenState extends State<TodoListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('TaskMaster'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : RefreshIndicator(
-              onRefresh: _loadTodos,
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: TextField(
-                                  controller: _textController,
-                                  decoration: const InputDecoration(
-                                    hintText: 'Add a new todo',
-                                    border: OutlineInputBorder(),
-                                  ),
-                                  onSubmitted: _addTodo,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              IconButton(
-                                onPressed: () => _selectDateTime(context),
-                                icon: const Icon(Icons.calendar_today),
-                                tooltip: 'Set due date',
-                              ),
-                              const SizedBox(width: 8),
-                              IconButton(
-                                onPressed: () => _addTodo(_textController.text),
-                                icon: const Icon(Icons.add),
-                                style: IconButton.styleFrom(
-                                  backgroundColor: Theme.of(context).colorScheme.primary,
-                                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                                ),
-                              ),
-                            ],
-                          ),
-                          if (_selectedDueDate != null)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Text(
-                                'Due date: ${_dateFormat.format(_selectedDueDate!)}',
-                                style: Theme.of(context).textTheme.bodySmall,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    _buildSection(
-                      title: 'Active',
-                      todos: _activeTodos,
-                      scrollController: _activeScrollController,
-                      trailing: null,
-                    ),
-                    const SizedBox(height: 16),
-                    Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Completed (${_completedTodos.length})',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              IconButton(
-                                icon: Icon(_showCompleted ? Icons.expand_less : Icons.expand_more),
-                                onPressed: () {
-                                  setState(() {
-                                    _showCompleted = !_showCompleted;
-                                  });
-                                },
-                                tooltip: _showCompleted ? 'Hide completed' : 'Show completed',
-                              ),
-                            ],
-                          ),
-                        ),
-                        const Divider(),
-                        if (_showCompleted)
-                          if (_completedTodos.isEmpty)
-                            Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Center(
-                                child: Text(
-                                  'No completed todos',
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
-                              ),
-                            )
-                          else
-                            ListView.builder(
-                              controller: _completedScrollController,
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: _completedTodos.length,
-                              itemBuilder: (context, index) {
-                                final todo = _completedTodos[index];
-                                return Dismissible(
-                                  key: Key(todo.id),
-                                  background: Container(
-                                    color: Colors.red,
-                                    alignment: Alignment.centerRight,
-                                    padding: const EdgeInsets.only(right: 16.0),
-                                    child: const Icon(Icons.delete, color: Colors.white),
-                                  ),
-                                  direction: DismissDirection.endToStart,
-                                  onDismissed: (_) => _deleteTodo(todo.id),
-                                  child: ListTile(
-                                    leading: Checkbox(
-                                      value: todo.isCompleted,
-                                      onChanged: (_) => _toggleTodo(todo.id),
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('TaskMaster'),
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          automaticallyImplyLeading: false,
+        ),
+        body: _isLoading
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : RefreshIndicator(
+                onRefresh: _loadTodos,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    controller: _textController,
+                                    decoration: const InputDecoration(
+                                      hintText: 'Add a new todo',
+                                      border: OutlineInputBorder(),
                                     ),
-                                    title: Text(
-                                      todo.title,
-                                      style: TextStyle(
-                                        decoration: todo.isCompleted
-                                            ? TextDecoration.lineThrough
-                                            : null,
+                                    onSubmitted: _addTodo,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                IconButton(
+                                  onPressed: () => _selectDateTime(context),
+                                  icon: const Icon(Icons.calendar_today),
+                                  tooltip: 'Set due date',
+                                ),
+                                const SizedBox(width: 8),
+                                IconButton(
+                                  onPressed: () => _addTodo(_textController.text),
+                                  icon: const Icon(Icons.add),
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: Theme.of(context).colorScheme.primary,
+                                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (_selectedDueDate != null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: Text(
+                                  'Due date: ${_dateFormat.format(_selectedDueDate!)}',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      _buildSection(
+                        title: 'Active',
+                        todos: _activeTodos,
+                        scrollController: _activeScrollController,
+                        trailing: null,
+                      ),
+                      const SizedBox(height: 16),
+                      Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Completed (${_completedTodos.length})',
+                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: Icon(_showCompleted ? Icons.expand_less : Icons.expand_more),
+                                  onPressed: () {
+                                    setState(() {
+                                      _showCompleted = !_showCompleted;
+                                    });
+                                  },
+                                  tooltip: _showCompleted ? 'Hide completed' : 'Show completed',
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Divider(),
+                          if (_showCompleted)
+                            if (_completedTodos.isEmpty)
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Center(
+                                  child: Text(
+                                    'No completed todos',
+                                    style: Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                ),
+                              )
+                            else
+                              ListView.builder(
+                                controller: _completedScrollController,
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: _completedTodos.length,
+                                itemBuilder: (context, index) {
+                                  final todo = _completedTodos[index];
+                                  return Dismissible(
+                                    key: Key(todo.id),
+                                    background: Container(
+                                      color: Colors.red,
+                                      alignment: Alignment.centerRight,
+                                      padding: const EdgeInsets.only(right: 16.0),
+                                      child: const Icon(Icons.delete, color: Colors.white),
+                                    ),
+                                    direction: DismissDirection.endToStart,
+                                    onDismissed: (_) => _deleteTodo(todo.id),
+                                    child: ListTile(
+                                      leading: Checkbox(
+                                        value: todo.isCompleted,
+                                        onChanged: (_) => _toggleTodo(todo.id),
+                                      ),
+                                      title: Text(
+                                        todo.title,
+                                        style: TextStyle(
+                                          decoration: todo.isCompleted
+                                              ? TextDecoration.lineThrough
+                                              : null,
+                                        ),
+                                      ),
+                                      subtitle: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Created: ${_dateFormat.format(todo.createdAt)}',
+                                            style: Theme.of(context).textTheme.bodySmall,
+                                          ),
+                                          if (todo.dueDate != null)
+                                            Text(
+                                              'Due: ${_dateFormat.format(todo.dueDate!)}',
+                                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                    color: todo.dueDate!.isBefore(DateTime.now())
+                                                        ? Colors.red
+                                                        : Colors.orange,
+                                                  ),
+                                            ),
+                                          if (todo.isCompleted && todo.completedAt != null)
+                                            Text(
+                                              'Completed: ${_dateFormat.format(todo.completedAt!)}',
+                                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                    color: Colors.green,
+                                                  ),
+                                            ),
+                                        ],
+                                      ),
+                                      trailing: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          IconButton(
+                                            icon: const Icon(Icons.calendar_today),
+                                            onPressed: () => _updateDueDate(todo.id),
+                                            tooltip: 'Update due date',
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(Icons.delete),
+                                            onPressed: () => _deleteTodo(todo.id),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    subtitle: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Created: ${_dateFormat.format(todo.createdAt)}',
-                                          style: Theme.of(context).textTheme.bodySmall,
-                                        ),
-                                        if (todo.dueDate != null)
-                                          Text(
-                                            'Due: ${_dateFormat.format(todo.dueDate!)}',
-                                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                                  color: todo.dueDate!.isBefore(DateTime.now())
-                                                      ? Colors.red
-                                                      : Colors.orange,
-                                                ),
-                                          ),
-                                        if (todo.isCompleted && todo.completedAt != null)
-                                          Text(
-                                            'Completed: ${_dateFormat.format(todo.completedAt!)}',
-                                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                                  color: Colors.green,
-                                                ),
-                                          ),
-                                      ],
-                                    ),
-                                    trailing: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        IconButton(
-                                          icon: const Icon(Icons.calendar_today),
-                                          onPressed: () => _updateDueDate(todo.id),
-                                          tooltip: 'Update due date',
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(Icons.delete),
-                                          onPressed: () => _deleteTodo(todo.id),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                      ],
-                    ),
-                    if (_showCompleted) const SizedBox(height: 16),
-                  ],
+                                  );
+                                },
+                              ),
+                        ],
+                      ),
+                      if (_showCompleted) const SizedBox(height: 16),
+                    ],
+                  ),
                 ),
               ),
-            ),
+      ),
     );
   }
 
